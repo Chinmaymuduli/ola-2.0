@@ -1,20 +1,16 @@
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
+import {Box, ScrollView, Text} from 'native-base';
 import React from 'react';
 
 const HomeScreen = () => {
   return (
-    <View style={styles.wrapperStyle}>
+    <Box flex={1} safeAreaTop bg={'white'}>
       <ScrollView>
-        <Text>hello user i am home screen</Text>
+        <Box>
+          <Text>hello user i am home screen</Text>
+        </Box>
       </ScrollView>
-    </View>
+    </Box>
   );
 };
 
 export default HomeScreen;
-
-const styles = StyleSheet.create({
-  wrapperStyle: {
-    flex: 1,
-  },
-});

@@ -14,6 +14,7 @@ import PrivateRoutes from './src/routes/PrivateRoutes';
 import {Provider as PaperProvider} from 'react-native-paper';
 import {QueryClient, QueryClientProvider} from 'react-query';
 import {NativeBaseProvider} from 'native-base';
+import Routes from './src/Routes';
 
 const App = () => {
   const queryClient = new QueryClient();
@@ -21,7 +22,7 @@ const App = () => {
     <NavigationContainer>
       <PaperProvider>
         <NativeBaseProvider>
-          <PrivateRoutes />
+          <Routes />
         </NativeBaseProvider>
       </PaperProvider>
     </NavigationContainer>

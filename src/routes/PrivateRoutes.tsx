@@ -9,8 +9,8 @@ const PrivateRoutes = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="TapNavigation"
-        component={TapNavigation}
+        name="HomeScreen"
+        component={HomeScreen}
         options={{
           headerShown: false,
         }}
