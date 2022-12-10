@@ -6,6 +6,8 @@ import Octicons from 'react-native-vector-icons/Octicons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {GOOGLE_MAPS_API_KEY} from 'utils';
 import {IMAGES} from '../assets';
+import {PrivateRoutesTypes} from 'src/types/AllRoutes';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
 const CAR_DATA = [
   {
@@ -25,7 +27,11 @@ const CAR_DATA = [
   },
 ];
 
-const HomeScreen = () => {
+type Props = NativeStackScreenProps<PrivateRoutesTypes, 'HomeScreen'>;
+const HomeScreen = ({route: {params}, navigation}: Props) => {
+  const lat = params?.latitude;
+  const lng = params?.longitude;
+  const des = params?.des;
   const [isFavorite, setIsFavorite] = useState(false);
   const [selectedCar, setSelectedCar] = useState<string>('1');
   return (
@@ -33,11 +39,18 @@ const HomeScreen = () => {
       <Box h={'1/2'}>
         <MapTracking />
         <Box position={'absolute'} w={'full'} px={4} mt={5}>
-          <Box bg={'white'} py={3} borderRadius={5} shadow={2}>
+          <Pressable
+            bg={'white'}
+            py={3}
+            borderRadius={5}
+            shadow={2}
+            onPress={() => navigation.navigate('SelectLocation')}>
             <Row justifyContent={'space-between'} alignItems={'center'} px={2}>
               <Row space={3} alignItems={'center'}>
                 <Octicons name="dot-fill" size={20} color={'green'} />
-                <Text>Kolathia,Odisha,Bhubaneswar</Text>
+                <Text width={260} noOfLines={1}>
+                  {des ? des : 'your location'}
+                </Text>
               </Row>
               <Pressable onPress={() => setIsFavorite(!isFavorite)}>
                 <Ionicons
@@ -47,7 +60,7 @@ const HomeScreen = () => {
                 />
               </Pressable>
             </Row>
-          </Box>
+          </Pressable>
         </Box>
       </Box>
       <Box h={'1/2'}>
@@ -99,17 +112,24 @@ const HomeScreen = () => {
               </Row>
             </Pressable>
           </Box>
-          <Box>
-            <Row>
-              <VStack>
-                <Text></Text>
+          <Box px={3} mt={2}>
+            <Row alignItems={'center'} space={6}>
+              <VStack space={2}>
+                <Text fontWeight={'bold'}>
+                  Invite your friends to try ola 2.0
+                </Text>
+                <Box bg={'gray.100'} borderRadius={5}>
+                  <Text textAlign={'center'} letterSpacing={2} py={1}>
+                    2ZAJG55522JHNJH
+                  </Text>
+                </Box>
               </VStack>
               <Image
                 source={IMAGES.VOUCHER}
                 alt="voucher"
                 style={{
-                  height: 50,
-                  width: 50,
+                  height: 100,
+                  width: 100,
                 }}
                 resizeMode={'contain'}
               />
@@ -117,30 +137,6 @@ const HomeScreen = () => {
           </Box>
         </Box>
       </Box>
-
-      {/* <GooglePlacesAutocomplete
-          styles={{
-            container: {
-              flex: 0,
-            },
-            textInput: {
-              fontSize: 18,
-            },
-          }}
-          placeholder="Where are you from ?"
-          onPress={(data, details = null) => {
-            console.log(data, details);
-          }}
-          query={{
-            key: GOOGLE_MAPS_API_KEY,
-            language: 'en',
-          }}
-          fetchDetails={true}
-          debounce={400}
-          nearbyPlacesAPI={'GooglePlacesSearch'}
-          enablePoweredByContainer={false}
-          minLength={2}
-        /> */}
     </Box>
   );
 };
