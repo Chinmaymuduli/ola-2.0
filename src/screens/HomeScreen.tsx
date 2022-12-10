@@ -1,17 +1,20 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
-import {Card} from 'react-native-paper';
 
 const HomeScreen = () => {
   return (
-    <View>
-      <Card>
-        <Card.Cover source={{uri: 'https://picsum.photos/700'}} />
-      </Card>
+    <View style={styles.wrapperStyle}>
+      <ScrollView>
+        <Text>hello user i am home screen</Text>
+      </ScrollView>
     </View>
   );
 };
 
 export default HomeScreen;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  wrapperStyle: {
+    flex: 1,
+  },
+});

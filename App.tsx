@@ -12,12 +12,17 @@ import {NavigationContainer} from '@react-navigation/native';
 import React from 'react';
 import PrivateRoutes from './src/routes/PrivateRoutes';
 import {Provider as PaperProvider} from 'react-native-paper';
+import {QueryClient, QueryClientProvider} from 'react-query';
+import {NativeBaseProvider} from 'native-base';
 
 const App = () => {
+  const queryClient = new QueryClient();
   return (
     <NavigationContainer>
       <PaperProvider>
-        <PrivateRoutes />
+        <NativeBaseProvider>
+          <PrivateRoutes />
+        </NativeBaseProvider>
       </PaperProvider>
     </NavigationContainer>
   );
