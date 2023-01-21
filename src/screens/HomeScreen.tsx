@@ -8,6 +8,10 @@ import {GOOGLE_MAPS_API_KEY} from 'utils';
 import {IMAGES} from '../assets';
 import {PrivateRoutesTypes} from 'src/types/AllRoutes';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {ActivityIndicator, PermissionsAndroid, StyleSheet} from 'react-native';
+import Geolocation from 'react-native-geolocation-service';
+import {useFocusEffect} from '@react-navigation/native';
+import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
 
 const CAR_DATA = [
   {
@@ -27,6 +31,32 @@ const CAR_DATA = [
   },
 ];
 
+// Location Setup
+const requestLocationPermission = async () => {
+  try {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      {
+        title: 'Geolocation Permission',
+        message: 'Can we access your location?',
+        buttonNeutral: 'Ask Me Later',
+        buttonNegative: 'Cancel',
+        buttonPositive: 'OK',
+      },
+    );
+    console.log('granted', granted);
+    if (granted === 'granted') {
+      console.log('You can use Geolocation');
+      return true;
+    } else {
+      console.log('You cannot use Geolocation');
+      return false;
+    }
+  } catch (err) {
+    return false;
+  }
+};
+
 type Props = NativeStackScreenProps<PrivateRoutesTypes, 'HomeScreen'>;
 const HomeScreen = ({route: {params}, navigation}: Props) => {
   const lat = params?.latitude;
@@ -34,10 +64,52 @@ const HomeScreen = ({route: {params}, navigation}: Props) => {
   const des = params?.des;
   const [isFavorite, setIsFavorite] = useState(false);
   const [selectedCar, setSelectedCar] = useState<string>('1');
+  const [location, setLocation] = useState<any>(false);
+
+  // Set Location
+  const getLocation = () => {
+    const result = requestLocationPermission();
+    result.then(res => {
+      console.log('res is:', res);
+      if (res) {
+        Geolocation.getCurrentPosition(
+          position => {
+            console.log({position});
+            setLocation(position);
+          },
+          error => {
+            // See error code charts below.
+            console.log(error.code, error.message);
+            setLocation(false);
+          },
+          {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+        );
+      }
+    });
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      getLocation();
+    }, []),
+  );
+
   return (
     <Box flex={1} safeAreaTop bg={'white'}>
       <Box h={'1/2'}>
-        <MapTracking />
+        {location?.coords && (
+          <MapView
+            showsUserLocation={true}
+            style={styles.mapStyle}
+            provider={PROVIDER_GOOGLE}
+            initialRegion={{
+              latitude: location?.coords?.latitude,
+              longitude: location?.coords?.longitude,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+          />
+        )}
         <Box position={'absolute'} w={'full'} px={4} mt={5}>
           <Pressable
             bg={'white'}
@@ -86,7 +158,10 @@ const HomeScreen = ({route: {params}, navigation}: Props) => {
         </Row>
         <Box px={3} mt={5}>
           <Box bg={'white'} shadow={3} borderRadius={7}>
-            <Pressable px={4} py={3}>
+            <Pressable
+              px={4}
+              py={3}
+              onPress={() => navigation.navigate('Destination')}>
               <Row
                 px={2}
                 alignItems={'center'}
@@ -142,3 +217,8 @@ const HomeScreen = ({route: {params}, navigation}: Props) => {
 };
 
 export default HomeScreen;
+const styles = StyleSheet.create({
+  mapStyle: {
+    flex: 1,
+  },
+});

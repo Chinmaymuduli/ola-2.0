@@ -9,6 +9,7 @@ export type PrivateRoutesTypes = {
     des?: any;
   };
   SelectLocation: undefined;
+  Destination: undefined;
 };
 export type PublicRoutesTypes = {};
 

@@ -34,7 +34,6 @@ const SelectLocation = () => {
             longitude: details?.geometry?.location?.lng,
             des: data?.description,
           });
-          // console.log(data?.description);
         }}
         query={{
           key: GOOGLE_MAPS_API_KEY,
