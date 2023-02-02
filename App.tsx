@@ -15,14 +15,16 @@ import {Provider as PaperProvider} from 'react-native-paper';
 import {QueryClient, QueryClientProvider} from 'react-query';
 import {NativeBaseProvider} from 'native-base';
 import Routes from './src/Routes';
+import {AppContextProvider} from './src/contexts';
 
 const App = () => {
-  const queryClient = new QueryClient();
   return (
     <NavigationContainer>
       <PaperProvider>
         <NativeBaseProvider>
-          <Routes />
+          <AppContextProvider>
+            <Routes />
+          </AppContextProvider>
         </NativeBaseProvider>
       </PaperProvider>
     </NavigationContainer>

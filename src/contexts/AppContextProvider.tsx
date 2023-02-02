@@ -4,8 +4,8 @@ const AppContext = createContext<any>({});
 
 type AppContextProviderProps = {
   children?: ReactNode;
-  isUserEnter: boolean;
-  setUserEnter: boolean;
+  isUserEnter?: boolean;
+  setUserEnter?: boolean;
 };
 
 export default ({children}: AppContextProviderProps) => {

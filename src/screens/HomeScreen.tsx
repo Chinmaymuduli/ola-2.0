@@ -1,6 +1,6 @@
 import {MapTracking} from 'components';
 import {Box, Image, Pressable, Row, Text, VStack} from 'native-base';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
 import Octicons from 'react-native-vector-icons/Octicons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -12,6 +12,7 @@ import {ActivityIndicator, PermissionsAndroid, StyleSheet} from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import {useFocusEffect} from '@react-navigation/native';
 import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
+import Geocoder from 'react-native-geocoding';
 
 const CAR_DATA = [
   {
@@ -65,6 +66,7 @@ const HomeScreen = ({route: {params}, navigation}: Props) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [selectedCar, setSelectedCar] = useState<string>('1');
   const [location, setLocation] = useState<any>(false);
+  const [currentAddress, setCurrentAddress] = useState<any>();
 
   // Set Location
   const getLocation = () => {
@@ -94,6 +96,17 @@ const HomeScreen = ({route: {params}, navigation}: Props) => {
     }, []),
   );
 
+  useEffect(() => {
+    Geocoder.init(GOOGLE_MAPS_API_KEY);
+    Geocoder.from({
+      lat: location?.coords?.latitude,
+      lng: location?.coords?.longitude,
+    }).then(json => {
+      setCurrentAddress(json.results[0].formatted_address);
+    });
+  }, [location?.coords?.latitude, location?.coords?.longitude]);
+
+  console.log({currentAddress});
   return (
     <Box flex={1} safeAreaTop bg={'white'}>
       <Box h={'1/2'}>
@@ -121,7 +134,7 @@ const HomeScreen = ({route: {params}, navigation}: Props) => {
               <Row space={3} alignItems={'center'}>
                 <Octicons name="dot-fill" size={20} color={'green'} />
                 <Text width={260} noOfLines={1}>
-                  {des ? des : 'your location'}
+                  {des ? des : currentAddress}
                 </Text>
               </Row>
               <Pressable onPress={() => setIsFavorite(!isFavorite)}>
