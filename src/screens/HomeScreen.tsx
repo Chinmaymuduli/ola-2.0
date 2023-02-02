@@ -13,6 +13,7 @@ import Geolocation from 'react-native-geolocation-service';
 import {useFocusEffect} from '@react-navigation/native';
 import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
 import Geocoder from 'react-native-geocoding';
+import {useAppContext} from 'src/contexts';
 
 const CAR_DATA = [
   {
@@ -60,6 +61,7 @@ const requestLocationPermission = async () => {
 
 type Props = NativeStackScreenProps<PrivateRoutesTypes, 'HomeScreen'>;
 const HomeScreen = ({route: {params}, navigation}: Props) => {
+  // const{setCurrentAddress,currentAddress} = useAppContext()
   const lat = params?.latitude;
   const lng = params?.longitude;
   const des = params?.des;
@@ -174,7 +176,11 @@ const HomeScreen = ({route: {params}, navigation}: Props) => {
             <Pressable
               px={4}
               py={3}
-              onPress={() => navigation.navigate('Destination')}>
+              onPress={() =>
+                navigation.navigate('Destination', {
+                  currentAddress: currentAddress,
+                })
+              }>
               <Row
                 px={2}
                 alignItems={'center'}
