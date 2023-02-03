@@ -34,7 +34,7 @@ const CAR_DATA = [
 ];
 
 // Location Setup
-const requestLocationPermission = async () => {
+export const requestLocationPermission = async () => {
   try {
     const granted = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
