@@ -1,5 +1,15 @@
-import {Box, Divider, Input, Pressable, Row, Text, VStack} from 'native-base';
-import React, {useState} from 'react';
+import {
+  Box,
+  Button,
+  Divider,
+  Input,
+  Pressable,
+  Row,
+  ScrollView,
+  Text,
+  VStack,
+} from 'native-base';
+import React, {useEffect, useState} from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Octicons from 'react-native-vector-icons/Octicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -7,13 +17,19 @@ import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete'
 import {GOOGLE_MAPS_API_KEY} from 'utils';
 import {PrivateRoutesTypes} from 'src/types/AllRoutes';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {useAppContext} from '../../src/contexts/AppContextProvider';
 
 type Props = NativeStackScreenProps<PrivateRoutesTypes, 'Destination'>;
 const Destination = ({route: {params}, navigation}: Props) => {
   const address = params?.currentAddress;
   const [destination, setDestination] = useState<any>();
   const [showAuto, setShowAuto] = useState(false);
-  console.log(address);
+  // console.log(address);
+  const {setUserDestination} = useAppContext();
+  useEffect(() => {
+    setUserDestination(destination);
+  }, [destination]);
+
   return (
     <Box flex={1} bg={'white'}>
       <Box py={4} px={3}>
@@ -41,24 +57,9 @@ const Destination = ({route: {params}, navigation}: Props) => {
           <Divider />
 
           <Pressable onPress={() => setShowAuto(true)} h={10}>
-            {/* <Input
-              variant={'unstyled'}
-              fontSize={14}
-              placeholder={'my destination location'}
-              value={destination}
-              InputLeftElement={
-                <Box px={4}>
-                  <Row alignItems={'center'}>
-                    <Octicons name="dot-fill" size={24} color={'red'} />
-                  </Row>
-                </Box>
-              }
-            /> */}
-            {/* <Box> */}
-            <Text pl={15} bg={'red.100'}>
+            <Text ml={'12'} pt={'1'} noOfLines={1}>
               {destination ? destination : 'my destination location'}
             </Text>
-            {/* </Box> */}
           </Pressable>
           <Box position={'absolute'} top={12} left={0}>
             <Box px={4}>
@@ -76,48 +77,60 @@ const Destination = ({route: {params}, navigation}: Props) => {
             left={5}></Box>
         </VStack>
       </Box>
-      {showAuto && (
-        <Box flex={1}>
-          <GooglePlacesAutocomplete
-            styles={{
-              container: {
-                flex: 0,
-                width: '90%',
-                // height: 40,
-                borderWidth: 1,
-                borderRadius: 8,
-                marginTop: 15,
-                alignSelf: 'center',
-                justifyContent: 'center',
-              },
 
-              textInput: {
-                fontSize: 13,
-                height: 30,
-                // borderRadius: 8,
-              },
-            }}
-            placeholder="Where are you from ?"
-            onPress={(data, details = null) => {
-              // navigation.navigate('HomeScreen', {
-              //   latitude: details?.geometry?.location?.lat,
-              //   longitude: details?.geometry?.location?.lng,
-              //   des: data?.description,
-              // });
-              setDestination(details?.formatted_address);
-            }}
-            query={{
-              key: GOOGLE_MAPS_API_KEY,
-              language: 'en',
-            }}
-            fetchDetails={true}
-            debounce={400}
-            nearbyPlacesAPI={'GooglePlacesSearch'}
-            enablePoweredByContainer={false}
-            minLength={2}
-          />
-        </Box>
+      {showAuto && (
+        <>
+          <Box px={4} pt={6} pb={4}>
+            <Text bold fontSize={16} color={'#0284c7'}>
+              Search your destination
+            </Text>
+          </Box>
+          <Box flex={1}>
+            <GooglePlacesAutocomplete
+              styles={{
+                container: {
+                  flex: 0,
+                  width: '90%',
+                  alignSelf: 'center',
+                },
+
+                textInput: {
+                  fontSize: 14,
+                  height: 40,
+                  borderRadius: 8,
+                  borderWidth: 1,
+                },
+              }}
+              placeholder="Where are you from ?"
+              onPress={(data, details = null) => {
+                setDestination(details?.formatted_address);
+              }}
+              query={{
+                key: GOOGLE_MAPS_API_KEY,
+                language: 'en',
+              }}
+              fetchDetails={true}
+              debounce={400}
+              nearbyPlacesAPI={'GooglePlacesSearch'}
+              enablePoweredByContainer={false}
+              minLength={2}
+            />
+          </Box>
+        </>
       )}
+
+      <Box position={'absolute'} bottom={0} px={4}>
+        <Button
+          onPress={() => navigation.navigate('HomeScreen', {})}
+          w={'xs'}
+          size="md"
+          colorScheme="secondary"
+          isDisabled={destination ? false : true}>
+          <Text bold color={'white'} letterSpacing={1}>
+            Start Ride
+          </Text>
+        </Button>
+      </Box>
     </Box>
   );
 };

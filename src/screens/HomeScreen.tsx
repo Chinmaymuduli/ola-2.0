@@ -13,7 +13,7 @@ import Geolocation from 'react-native-geolocation-service';
 import {useFocusEffect} from '@react-navigation/native';
 import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
 import Geocoder from 'react-native-geocoding';
-import {useAppContext} from 'src/contexts';
+import {useAppContext} from '../../src/contexts/AppContextProvider';
 
 const CAR_DATA = [
   {
@@ -61,7 +61,7 @@ const requestLocationPermission = async () => {
 
 type Props = NativeStackScreenProps<PrivateRoutesTypes, 'HomeScreen'>;
 const HomeScreen = ({route: {params}, navigation}: Props) => {
-  // const{setCurrentAddress,currentAddress} = useAppContext()
+  const {userDestination} = useAppContext();
   const lat = params?.latitude;
   const lng = params?.longitude;
   const des = params?.des;
@@ -74,7 +74,7 @@ const HomeScreen = ({route: {params}, navigation}: Props) => {
   const getLocation = () => {
     const result = requestLocationPermission();
     result.then(res => {
-      console.log('res is:', res);
+      // console.log('res is:', res);
       if (res) {
         Geolocation.getCurrentPosition(
           position => {
@@ -83,7 +83,7 @@ const HomeScreen = ({route: {params}, navigation}: Props) => {
           },
           error => {
             // See error code charts below.
-            console.log(error.code, error.message);
+            // console.log(error.code, error.message);
             setLocation(false);
           },
           {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
@@ -108,7 +108,6 @@ const HomeScreen = ({route: {params}, navigation}: Props) => {
     });
   }, [location?.coords?.latitude, location?.coords?.longitude]);
 
-  console.log({currentAddress});
   return (
     <Box flex={1} safeAreaTop bg={'white'}>
       <Box h={'1/2'}>

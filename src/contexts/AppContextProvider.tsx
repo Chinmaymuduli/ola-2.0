@@ -12,6 +12,8 @@ type AppContextProviderProps = {
   setCurrentLongitude?: any;
   currentAddress?: any;
   setCurrenAddress?: any;
+  userDestination?: any;
+  setUserDestination?: any;
 };
 
 export default ({children}: AppContextProviderProps) => {
@@ -20,6 +22,7 @@ export default ({children}: AppContextProviderProps) => {
   const [currentLatitude, setCurrentLatitude] = React.useState();
   const [currentLongitude, setCurrentLongitude] = React.useState();
   const [currentAddress, setCurrenAddress] = React.useState<any>();
+  const [userDestination, setUserDestination] = React.useState<any>();
 
   return (
     <AppContext.Provider
@@ -34,6 +37,8 @@ export default ({children}: AppContextProviderProps) => {
         setCurrentLongitude,
         currentAddress,
         setCurrenAddress,
+        userDestination,
+        setUserDestination,
       }}>
       {children}
     </AppContext.Provider>
