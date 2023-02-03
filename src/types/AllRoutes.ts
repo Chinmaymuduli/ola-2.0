@@ -12,6 +12,7 @@ export type PrivateRoutesTypes = {
   Destination: {
     currentAddress?: any;
   };
+  DestinationRide?: any;
 };
 export type PublicRoutesTypes = {};
 

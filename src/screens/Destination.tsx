@@ -25,10 +25,11 @@ const Destination = ({route: {params}, navigation}: Props) => {
   const [destination, setDestination] = useState<any>();
   const [showAuto, setShowAuto] = useState(false);
   // console.log(address);
-  const {setUserDestination} = useAppContext();
-  useEffect(() => {
-    setUserDestination(destination);
-  }, [destination]);
+  const {setUserDestination, setDestinationDes} = useAppContext();
+  // useEffect(() => {
+  //   setUserDestination(destination);
+  // }, [destination]);
+  // console.log({destination});
 
   return (
     <Box flex={1} bg={'white'}>
@@ -104,6 +105,8 @@ const Destination = ({route: {params}, navigation}: Props) => {
               placeholder="Where are you from ?"
               onPress={(data, details = null) => {
                 setDestination(details?.formatted_address);
+                setUserDestination(details?.geometry?.location);
+                setDestinationDes(data?.description);
               }}
               query={{
                 key: GOOGLE_MAPS_API_KEY,
@@ -121,7 +124,7 @@ const Destination = ({route: {params}, navigation}: Props) => {
 
       <Box position={'absolute'} bottom={0} px={4}>
         <Button
-          onPress={() => navigation.navigate('HomeScreen', {})}
+          onPress={() => navigation.navigate('DestinationRide')}
           w={'xs'}
           size="md"
           colorScheme="secondary"

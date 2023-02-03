@@ -11,7 +11,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {ActivityIndicator, PermissionsAndroid, StyleSheet} from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import {useFocusEffect} from '@react-navigation/native';
-import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
+import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import Geocoder from 'react-native-geocoding';
 import {useAppContext} from '../../src/contexts/AppContextProvider';
 
@@ -61,7 +61,8 @@ const requestLocationPermission = async () => {
 
 type Props = NativeStackScreenProps<PrivateRoutesTypes, 'HomeScreen'>;
 const HomeScreen = ({route: {params}, navigation}: Props) => {
-  const {userDestination} = useAppContext();
+  const {userDestination, setCurrenUserAddress, setCurrentDes} =
+    useAppContext();
   const lat = params?.latitude;
   const lng = params?.longitude;
   const des = params?.des;
@@ -80,6 +81,7 @@ const HomeScreen = ({route: {params}, navigation}: Props) => {
           position => {
             console.log({position});
             setLocation(position);
+            setCurrenUserAddress(position);
           },
           error => {
             // See error code charts below.
@@ -105,8 +107,14 @@ const HomeScreen = ({route: {params}, navigation}: Props) => {
       lng: location?.coords?.longitude,
     }).then(json => {
       setCurrentAddress(json.results[0].formatted_address);
+      setCurrentDes(json.results[0].formatted_address);
     });
   }, [location?.coords?.latitude, location?.coords?.longitude]);
+
+  // useEffect(() => {
+  //   setCurrentDes(des);
+  // }, [des]);
+  // console.log(c);
 
   return (
     <Box flex={1} safeAreaTop bg={'white'}>
@@ -121,8 +129,15 @@ const HomeScreen = ({route: {params}, navigation}: Props) => {
               longitude: location?.coords?.longitude,
               latitudeDelta: 0.0922,
               longitudeDelta: 0.0421,
-            }}
-          />
+            }}>
+            <Marker
+              coordinate={{
+                latitude: location?.coords?.latitude,
+                longitude: location?.coords?.longitude,
+              }}
+              pinColor="red"
+            />
+          </MapView>
         )}
         <Box position={'absolute'} w={'full'} px={4} mt={5}>
           <Pressable

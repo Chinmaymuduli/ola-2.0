@@ -1,7 +1,12 @@
 import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {Destination, HomeScreen, SelectLocation} from 'screens';
+import {
+  Destination,
+  DestinationRide,
+  HomeScreen,
+  SelectLocation,
+} from 'screens';
 import TapNavigation from './TapNavigation';
 import {PrivateRoutesTypes} from 'src/types/AllRoutes';
 
@@ -26,6 +31,13 @@ const PrivateRoutes = () => {
       <Stack.Screen
         name="Destination"
         component={Destination}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="DestinationRide"
+        component={DestinationRide}
         options={{
           headerShown: false,
         }}
