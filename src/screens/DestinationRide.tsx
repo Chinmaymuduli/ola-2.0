@@ -39,7 +39,7 @@ const DestinationRide = () => {
       image: IMAGES.RIDE_CAR1,
       travelTime: 'travel time..',
       price: 210,
-      multiplier: 1,
+      multiplier: 10,
     },
     {
       id: 'r2',
@@ -47,7 +47,7 @@ const DestinationRide = () => {
       image: IMAGES.RIDE_CAR2,
       travelTime: 'travel time..',
       price: 230,
-      multiplier: 1.2,
+      multiplier: 12,
     },
     {
       id: 'r3',
@@ -55,11 +55,13 @@ const DestinationRide = () => {
       image: IMAGES.RIDE_CAR3,
       travelTime: 'travel time..',
       price: 250,
-      multiplier: 1.75,
+      multiplier: 15,
     },
   ];
 
-  const BASIC_PRICE = 1.2;
+  console.log({timeInformation});
+
+  const BASIC_PRICE = 1.5;
   return (
     <Box flex={1}>
       <Box h={'1/2'}>
@@ -68,7 +70,8 @@ const DestinationRide = () => {
       <Box h={'1/2'} bg={'white'}>
         <Center my={3}>
           <Text bold fontSize={16}>
-            Select a Ride - {parseInt(timeInformation?.distance?.text) * 1.6} Km
+            Select a Ride -{' '}
+            {(parseInt(timeInformation?.distance?.text) * 1.6).toFixed(1)} Km
           </Text>
         </Center>
         <Box px={3}>

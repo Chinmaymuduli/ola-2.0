@@ -1,4 +1,4 @@
-import {StyleSheet, Text, View, Platform} from 'react-native';
+import {StyleSheet, Text, View, Platform, TouchableOpacity} from 'react-native';
 import React, {useRef, useEffect, useState} from 'react';
 import MapView, {
   Marker,
@@ -10,6 +10,10 @@ import MapViewDirections from 'react-native-maps-directions';
 import {GOOGLE_MAPS_API_KEY} from 'utils';
 import {requestLocationPermission} from '../../src/screens/HomeScreen';
 import Geolocation from 'react-native-geolocation-service';
+import {Box, Image} from 'native-base';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import Octicons from 'react-native-vector-icons/Octicons';
+import {IMAGES} from '../assets';
 
 type MAP_TYPES = {
   lat?: any;
@@ -46,14 +50,14 @@ const MapTracking = ({lat, lng}: MAP_TYPES) => {
   const markerRef = useRef<any>();
   const [state, setState] = useState({
     curLoc: {
-      latitude: 30.7046,
-      longitude: 77.1025,
+      latitude: currentUserAddress?.coords?.latitude,
+      longitude: currentUserAddress?.coords?.longitude,
     },
     destinationCords: {},
     isLoading: false,
     coordinate: new AnimatedRegion({
-      latitude: 30.7046,
-      longitude: 77.1025,
+      latitude: currentUserAddress?.coords?.latitude,
+      longitude: currentUserAddress?.coords?.longitude,
       latitudeDelta: 0.0922,
       longitudeDelta: 0.0421,
     }),
@@ -77,7 +81,13 @@ const MapTracking = ({lat, lng}: MAP_TYPES) => {
     const locPermissionDenied = await requestLocationPermission();
     if (locPermissionDenied) {
       const {latitude, longitude, heading} = await getCurrentLocation();
-      console.log('get live location after 4 second', heading);
+      console.log(
+        'get live location after 4 second',
+        heading,
+        // latitude,
+        // longitude,
+      );
+      // console.log()
       animate(latitude, longitude);
       updateState({
         heading: heading,
@@ -85,6 +95,7 @@ const MapTracking = ({lat, lng}: MAP_TYPES) => {
         coordinate: new AnimatedRegion({
           latitude: latitude,
           longitude: longitude,
+
           latitudeDelta: 0.0922,
           longitudeDelta: 0.0421,
         }),
@@ -103,14 +114,38 @@ const MapTracking = ({lat, lng}: MAP_TYPES) => {
     }
   };
 
-  // tracking
-
   useEffect(() => {
     const interval = setInterval(() => {
       getLiveLocation();
     }, 6000);
     return () => clearInterval(interval);
   }, []);
+
+  //   const onPressLocation = () => {
+  //     navigation.navigate('chooseLocation', { getCordinates: fetchValue })
+  // }
+  const fetchValue = (data: {
+    destinationCords: {latitude: any; longitude: any};
+  }) => {
+    console.log('this is data', data);
+    updateState({
+      destinationCords: {
+        latitude: data.destinationCords.latitude,
+        longitude: data.destinationCords.longitude,
+      },
+    });
+  };
+
+  const onCenter = () => {
+    mapRef.current.animateToRegion({
+      latitude: curLoc.latitude,
+      longitude: curLoc.longitude,
+      latitudeDelta: 0.0922,
+      longitudeDelta: 0.0421,
+    });
+  };
+
+  // tracking
 
   useEffect(() => {
     if (!userDestination && !currentUserAddress) return;
@@ -134,57 +169,110 @@ const MapTracking = ({lat, lng}: MAP_TYPES) => {
     getTravelTime();
   }, [userDestination, currentUserAddress, GOOGLE_MAPS_API_KEY]);
 
-  // console.log(currentUserAddress);
+  console.log({curLoc});
   return (
-    <MapView
-      ref={mapRef}
-      showsUserLocation={true}
-      style={styles.mapStyle}
-      provider={PROVIDER_GOOGLE}
-      initialRegion={{
-        latitude: currentUserAddress?.coords?.latitude,
-        longitude: currentUserAddress?.coords?.longitude,
-        latitudeDelta: 0.0922,
-        longitudeDelta: 0.0421,
-      }}>
-      {userDestination && currentUserAddress && (
-        <MapViewDirections
-          origin={{
-            latitude: currentUserAddress?.coords?.latitude,
-            longitude: currentUserAddress?.coords?.longitude,
-          }}
-          destination={{
-            latitude: userDestination?.lat,
-            longitude: userDestination?.lng,
-          }}
-          apikey={GOOGLE_MAPS_API_KEY}
-          strokeWidth={3}
-          strokeColor="hotpink"
-        />
-      )}
-      {currentUserAddress && (
-        <Marker
+    <Box flex={1}>
+      <MapView
+        ref={mapRef}
+        showsUserLocation={true}
+        style={styles.mapStyle}
+        provider={PROVIDER_GOOGLE}
+        initialRegion={{
+          // latitude: currentUserAddress?.coords?.latitude,
+          // longitude: currentUserAddress?.coords?.longitude,
+          ...curLoc,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        }}>
+        {userDestination && currentUserAddress && (
+          <MapViewDirections
+            // origin={{
+            //   latitude: currentUserAddress?.coords?.latitude,
+            //   longitude: currentUserAddress?.coords?.longitude,
+            // }}
+            origin={curLoc}
+            destination={{
+              latitude: userDestination?.lat,
+              longitude: userDestination?.lng,
+            }}
+            apikey={GOOGLE_MAPS_API_KEY}
+            strokeWidth={3}
+            strokeColor="hotpink"
+            optimizeWaypoints={true}
+            onStart={params => {
+              console.log(
+                `Started routing between "${params.origin}" and "${params.destination}"`,
+              );
+            }}
+            onReady={result => {
+              console.log(`Distance: ${result.distance} km`);
+              console.log(`Duration: ${result.duration} min.`);
+              // fetchTime(result.distance, result.duration),
+              //     mapRef.current.fitToCoordinates(result.coordinates, {
+              //         edgePadding: {
+              //             // right: 30,
+              //             // bottom: 300,
+              //             // left: 30,
+              //             // top: 100,
+              //         },
+              //     });
+            }}
+            onError={errorMessage => {
+              console.log('GOT AN ERROR', errorMessage);
+            }}
+          />
+        )}
+        {currentUserAddress && (
+          <Marker.Animated
+            coordinate={{
+              latitude: currentUserAddress?.coords?.latitude,
+              longitude: currentUserAddress?.coords?.longitude,
+            }}
+            // pinColor="red"
+            identifier={'origin'}
+            title={'My Origin'}
+          />
+        )}
+
+        {/* <Marker.Animated
+          ref={markerRef}
           coordinate={{
             latitude: currentUserAddress?.coords?.latitude,
             longitude: currentUserAddress?.coords?.longitude,
-          }}
-          // pinColor="red"
-          identifier={'origin'}
-          title={'My Origin'}
-        />
-      )}
-      {userDestination && (
-        <Marker
-          coordinate={{
-            latitude: userDestination?.lat,
-            longitude: userDestination?.lng,
-          }}
-          pinColor="black"
-          identifier={'destination'}
-          title={'My Destination'}
-        />
-      )}
-    </MapView>
+          }}>
+          <Image
+            source={IMAGES.LOGO}
+            alt="logo"
+            style={{
+              width: 20,
+              height: 20,
+              transform: [{rotate: `${heading}deg`}],
+            }}
+            resizeMode="contain"
+          />
+        </Marker.Animated> */}
+        {userDestination && (
+          <Marker
+            coordinate={{
+              latitude: userDestination?.lat,
+              longitude: userDestination?.lng,
+            }}
+            pinColor="black"
+            identifier={'destination'}
+            title={'My Destination'}
+          />
+        )}
+      </MapView>
+      <TouchableOpacity
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          right: 0,
+        }}
+        onPress={onCenter}>
+        <Octicons name="dot-fill" color={'green'} />
+      </TouchableOpacity>
+    </Box>
   );
 };
 
